@@ -58,13 +58,14 @@ def main():
     parser.add_argument('-p', '--process_path', help="path to pdnl_process outputs", required=True)
     parser.add_argument('-f', '--feature_path', required=False, default="")
     parser.add_argument('-w', '--wildcat_path', help="path to pdnl_wildcat outputs", default=None)
+    parser.add_argument('--seg_classes', default=['CSF', 'R', 'GM', 'L'])
     parser.add_argument('--debug', action='store_true', help="plots an output image to analyze")
     args = parser.parse_args()
 
     microglia_classes = ['rammified', 'dystrophic', 'rod', 'ameboid', 'hypertrophic']
 
     # generate the sample grids if able
-    seg_classes = ['CSF_GM', 'R', 'GM_WM', 'L']
+    seg_classes = args.seg_classes
     sample_grids = {}
     deforms = {}
     for f in tqdm(os.listdir(os.path.join(args.input_path, '..')), desc="generating sample grids"):
@@ -79,7 +80,7 @@ def main():
                         break
                 else:
                     print(cls, roi_name)
-            sample_grids[roi_name] = pdnl_sana.interpolate.fan_sample(*segments)[0][::8, ::8, :]
+            sample_grids[roi_name] = pdnl_sana.interpolate.fan_sample(*segments)[0]
 
     
     ao_df, wildcat_df, microglia_df = [], [], []
